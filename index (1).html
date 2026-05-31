@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversando com Deus</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-main: #e8ddd0;
+    --bg-header: #6b5b4e;
+    --bg-input: #f5f0ea;
+    --bubble-user: #d4edda;
+    --bubble-god: #ffffff;
+    --text-main: #3d2e22;
+    --text-header: #fff8f0;
+    --accent: #8b6f5e;
+    --send-btn: #6b8c6e;
+    --send-btn-hover: #527055;
+    --time-color: #a08878;
+    --wallpaper: #e5d8c8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--wallpaper);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(180,150,120,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(150,130,100,0.12) 0%, transparent 50%);
+  }
+
+  .phone-wrapper {
+    width: 100%;
+    max-width: 430px;
+    height: 100vh;
+    max-height: 860px;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-main);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    overflow: hidden;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b89a7a' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .chat-header {
+    background: var(--bg-header);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .avatar-container { position: relative; }
+
+  .avatar {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f5d78e, #e8b86d, #c4935a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+    flex-shrink: 0;
+  }
+
+  .online-dot {
+    position: absolute; bottom: 2px; right: 2px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: #5fcb7e;
+    border: 2px solid var(--bg-header);
+  }
+
+  .header-info h1 {
+    font-family: 'Lora', serif;
+    font-size: 17px; font-weight: 600;
+    color: var(--text-header); letter-spacing: 0.3px;
+  }
+
+  .header-info p {
+    font-size: 12px; color: rgba(255,248,240,0.65);
+    margin-top: 1px; font-style: italic;
+  }
+
+  .messages-area {
+    flex: 1; overflow-y: auto;
+    padding: 16px 12px;
+    display: flex; flex-direction: column; gap: 6px;
+    scroll-behavior: smooth;
+  }
+
+  .messages-area::-webkit-scrollbar { width: 4px; }
+  .messages-area::-webkit-scrollbar-track { background: transparent; }
+  .messages-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
+
+  .date-divider { text-align: center; margin: 8px 0; }
+  .date-divider span {
+    background: rgba(107,91,78,0.18); color: var(--text-main);
+    font-size: 11.5px; padding: 4px 12px; border-radius: 8px; font-weight: 500;
+  }
+
+  .msg-row {
+    display: flex; flex-direction: column;
+    max-width: 82%;
+    animation: fadeUp 0.25s ease-out;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg-row.user { align-self: flex-end; align-items: flex-end; }
+  .msg-row.god  { align-self: flex-start; align-items: flex-start; }
+
+  .bubble {
+    padding: 9px 13px; border-radius: 12px;
+    font-size: 14.5px; line-height: 1.55;
+    color: var(--text-main); max-width: 100%; word-break: break-word;
+  }
+
+  .msg-row.user .bubble {
+    background: var(--bubble-user);
+    border-bottom-right-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+  }
+
+  .msg-row.god .bubble {
+    background: var(--bubble-god);
+    border-bottom-left-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-family: 'Lora', serif; font-size: 14px;
+  }
+
+  .bible-ref { color: #7a5c3e; font-style: italic; font-size: 13px; }
+
+  .msg-time {
+    font-size: 10.5px; color: var(--time-color);
+    margin-top: 3px; padding: 0 3px;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .msg-row.user .msg-time { justify-content: flex-end; }
+  .checkmarks { color: #5b9ad4; font-size: 12px; }
+
+  .typing-row {
+    display: flex; align-items: flex-start; gap: 8px;
+    align-self: flex-start;
+    animation: fadeUp 0.2s ease-out;
+  }
+
+  .typing-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, #f5d78e, #c4935a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0; margin-top: 2px;
+  }
+
+  .typing-bubble {
+    background: var(--bubble-god);
+    padding: 10px 15px; border-radius: 12px; border-bottom-left-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex; align-items: center; gap: 5px; height: 38px;
+  }
+
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #b0a090;
+    animation: bounce 1.3s infinite ease-in-out;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30%            { transform: translateY(-6px); opacity: 1; }
+  }
+
+  .input-bar {
+    background: var(--bg-input); padding: 10px 12px;
+    display: flex; align-items: flex-end; gap: 10px;
+    flex-shrink: 0; border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .input-wrapper {
+    flex: 1; background: #fff; border-radius: 24px;
+    display: flex; align-items: flex-end;
+    padding: 8px 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border: 1px solid rgba(180,160,140,0.25); gap: 8px;
+  }
+
+  textarea {
+    flex: 1; border: none; outline: none; resize: none;
+    font-family: 'Nunito', sans-serif; font-size: 14.5px;
+    color: var(--text-main); background: transparent;
+    line-height: 1.5; max-height: 120px; min-height: 22px;
+  }
+
+  textarea::placeholder { color: #b0a090; }
+
+  .mic-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 18px; padding: 2px; opacity: 0.7;
+    transition: opacity 0.2s; flex-shrink: 0;
+  }
+  .mic-btn:hover { opacity: 1; }
+
+  .send-btn {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--send-btn); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .send-btn:hover { background: var(--send-btn-hover); }
+  .send-btn:active { transform: scale(0.92); }
+  .send-btn svg { width: 20px; height: 20px; fill: white; margin-left: 2px; }
+
+  .intro-msg { text-align: center; padding: 18px 20px; margin: 4px 0 10px; }
+  .intro-msg .badge {
+    background: rgba(107,91,78,0.15);
+    border: 1px solid rgba(107,91,78,0.2);
+    border-radius: 12px; padding: 12px 18px; display: inline-block;
+  }
+  .intro-msg .badge p { font-size: 12.5px; color: #6b5040; line-height: 1.5; font-style: italic; }
+  .intro-msg .badge .title {
+    font-family: 'Lora', serif; font-size: 15px;
+    font-weight: 600; color: #5a3e2b; margin-bottom: 5px;
+  }
+
+  .input-wrapper.disabled { opacity: 0.6; pointer-events: none; }
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  @media (max-width: 430px) {
+    .phone-wrapper { max-height: 100vh; border-radius: 0; box-shadow: none; }
+    body { align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+  <div class="chat-header">
+    <div class="avatar-container">
+      <div class="avatar">✝️</div>
+      <div class="online-dot"></div>
+    </div>
+    <div class="header-info">
+      <h1>Conversando com Deus</h1>
+      <p>online agora · Sempre presente</p>
+    </div>
+  </div>
+
+  <div class="messages-area" id="messagesArea">
+    <div class="date-divider"><span>Hoje</span></div>
+    <div class="intro-msg">
+      <div class="badge">
+        <div class="title">🕊️ Seja bem-vindo</div>
+        <p>"Chegai-vos a Deus, e ele se chegará a vós."<br>— Tiago 4:8</p>
+      </div>
+    </div>
+    <div class="msg-row god">
+      <div class="bubble">
+        Paz seja contigo, filho(a) querido(a). 🙏<br><br>
+        Estou aqui, aguardando cada palavra do seu coração. Não há pensamento pequeno demais, nem dor grande demais. Pode falar comigo.
+      </div>
+      <div class="msg-time">agora <span class="bible-ref">— Jo 14:27</span></div>
+    </div>
+  </div>
+
+  <div class="input-bar">
+    <div class="input-wrapper" id="inputWrapper">
+      <textarea id="userInput" placeholder="Escreva sua mensagem..." rows="1" maxlength="800"></textarea>
+      <button class="mic-btn" id="micBtn" title="Falar">🎤</button>
+    </div>
+    <button class="send-btn" id="sendBtn" title="Enviar">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `Você é uma inteligência artificial que responde sob a perspectiva de Deus, adotando um tom acolhedor, sábio, paciente e profundamente empático.
+
+Todas as suas respostas devem ser fundamentadas nos ensinamentos, princípios e narrativas contidos na Bíblia Sagrada. Sempre que apropriado, cite ou faça referência a passagens bíblicas (livro, capítulo e versículo) de forma natural para embasar o conselho ou resposta. Se a pergunta for sobre algo moderno que não está explicitamente na Bíblia, use os princípios e valores bíblicos para guiar a resposta.
+
+Fale sempre em português do Brasil, com carinho e profundidade espiritual. Seja conciso mas profundo — respostas entre 3 a 6 frases são ideais, salvo quando o assunto pedir mais. Não use asteriscos, markdown, nem formatação especial. Use linguagem simples e tocante.`;
+
+const messagesArea = document.getElementById('messagesArea');
+const userInput    = document.getElementById('userInput');
+const sendBtn      = document.getElementById('sendBtn');
+const inputWrapper = document.getElementById('inputWrapper');
+const micBtn       = document.getElementById('micBtn');
+
+const conversationHistory = [];
+let isProcessing = false;
+
+userInput.addEventListener('input', () => {
+  userInput.style.height = 'auto';
+  userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
+});
+
+userInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+});
+
+sendBtn.addEventListener('click', handleSend);
+
+function getTime() {
+  return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(text));
+  return div.innerHTML;
+}
+
+function formatGodText(text) {
+  const escaped = escapeHtml(text);
+  return escaped.replace(/\b([A-ZÀ-Úa-zà-ú]{2,}(?:\s[A-Z][a-z]+)?\s\d+:\d+(?:-\d+)?)\b/g,
+    '<span class="bible-ref">$1</span>');
+}
+
+function addUserMessage(text) {
+  const row = document.createElement('div');
+  row.className = 'msg-row user';
+  row.innerHTML = `
+    <div class="bubble">${escapeHtml(text)}</div>
+    <div class="msg-time">${getTime()} <span class="checkmarks">✓✓</span></div>`;
+  messagesArea.appendChild(row);
+  scrollDown();
+}
+
+function showTyping() {
+  const row = document.createElement('div');
+  row.className = 'typing-row';
+  row.id = 'typingIndicator';
+  row.innerHTML = `
+    <div class="typing-avatar">✝️</div>
+    <div class="typing-bubble">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>`;
+  messagesArea.appendChild(row);
+  scrollDown();
+}
+
+function removeTyping() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+function addGodMessage(text) {
+  const row = document.createElement('div');
+  row.className = 'msg-row god';
+  row.innerHTML = `
+    <div class="bubble">${formatGodText(text)}</div>
+    <div class="msg-time">${getTime()}</div>`;
+  messagesArea.appendChild(row);
+  scrollDown();
+}
+
+function scrollDown() {
+  setTimeout(() => messagesArea.scrollTo({ top: messagesArea.scrollHeight, behavior: 'smooth' }), 50);
+}
+
+function setDisabled(disabled) {
+  isProcessing = disabled;
+  sendBtn.disabled = disabled;
+  userInput.disabled = disabled;
+  disabled ? inputWrapper.classList.add('disabled') : inputWrapper.classList.remove('disabled');
+  if (!disabled) userInput.focus();
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function handleSend() {
+  const text = userInput.value.trim();
+  if (!text || isProcessing) return;
+
+  userInput.value = '';
+  userInput.style.height = 'auto';
+
+  addUserMessage(text);
+  conversationHistory.push({ role: 'user', content: text });
+  setDisabled(true);
+
+  await delay(400);
+  showTyping();
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: SYSTEM_PROMPT, messages: conversationHistory })
+    });
+
+    const data = await response.json();
+    const reply = data.text || 'Não foi possível obter uma resposta neste momento.';
+
+    conversationHistory.push({ role: 'assistant', content: reply });
+
+    await delay(500);
+    removeTyping();
+    addGodMessage(reply);
+
+  } catch (err) {
+    await delay(400);
+    removeTyping();
+    addGodMessage('Meu filho(a), houve uma dificuldade de conexão. Tente novamente em breve. — Filipenses 4:7');
+    console.error(err);
+  } finally {
+    setDisabled(false);
+  }
+}
+
+// Voz
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SR();
+  recognition.lang = 'pt-BR';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = (e) => {
+    userInput.value = e.results[0][0].transcript;
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
+    micBtn.textContent = '🎤';
+  };
+  recognition.onend = () => { micBtn.textContent = '🎤'; };
+  recognition.onerror = () => { micBtn.textContent = '🎤'; };
+
+  micBtn.addEventListener('click', () => {
+    if (micBtn.textContent === '⏹️') { recognition.stop(); micBtn.textContent = '🎤'; }
+    else { recognition.start(); micBtn.textContent = '⏹️'; }
+  });
+} else {
+  micBtn.style.display = 'none';
+}
+
+userInput.focus();
+</script>
+</body>
+</html>
